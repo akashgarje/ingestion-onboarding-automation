@@ -135,7 +135,7 @@ def git_push_files_to_feature_branch(files, branch_name, folder):
     try:
         GIT_USERNAME = 'akashgarje'
         GIT_TOKEN = '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'
-        GIT_REPO = 'ingestion-onboarding-automation'
+        GIT_REPO = 'https://akashgarje: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@github.com/akashgarje/ingestor-onboarding-automation.git'
 
         # Get the script's directory (local Git repo)
         repo_path = os.path.dirname(os.path.abspath(__file__))
