@@ -133,9 +133,9 @@ def create_downloadable_zip(sheets_data, src_nm, dataset_nm, land_sql_script, st
 
 def git_push_files_to_feature_branch(files, branch_name, folder):
     try:
-        GIT_USERNAME = 'add username'
-        GIT_TOKEN = 'Add Token'
-        GIT_REPO = 'add repo'
+        GIT_USERNAME = 'akashgarje'
+        GIT_TOKEN = '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'
+        GIT_REPO = 'ingestion-onboarding-automation'
 
         # Get the script's directory (local Git repo)
         repo_path = os.path.dirname(os.path.abspath(__file__))
@@ -324,8 +324,8 @@ def extract_metadata_from_excel(xls):
             "dist_key_ind" : '',
             "proc_stage_cd" : '',
             "catlg_flg" : '',
-            "dblqt_repl_flg" : ''
-
+            "dblqt_repl_flg" : '',
+            "delta_key_ind": ''
         })
         column_counter += 1
 
@@ -350,7 +350,8 @@ def generate_sys_config_dataset_info():
     "catlg_flg": dialect,
     "trgt_dw_list": warehouse_nm,
     "cmput_whse_nm": "",
-    "manual_upld_path": "N"
+    "manl_upld_s3_uri_txt": "N",
+    "manl_upld_flg":"N"
     }
     )
     return pd.DataFrame(extracted_data)
@@ -397,8 +398,9 @@ def generate_sys_config_table_info():
     "bypas_file_order_seq_check_ind": "N",
     "land_spctrm_flg": "",
     "wrkflw_nm": "",
-    "alias": "1",
-    "field_posn_nbr_chk": "0"
+    "copy_by_field_nm_not_posn_index": "",
+    "bypas_file_hdr_config_posn_check_ind": "",
+    "bypas_file_hdr_config_check_inf": ""
     }
     )
     return pd.DataFrame(extracted_data)
