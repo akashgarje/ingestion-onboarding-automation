@@ -5,7 +5,7 @@ on:
     types:
       - closed  # Runs when the PR is merged
     branches:
-      - dev  # Only when merged into dev branch
+      - dev  
 
 jobs:
   deploy:
