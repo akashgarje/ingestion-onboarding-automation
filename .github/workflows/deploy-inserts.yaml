@@ -43,6 +43,7 @@ jobs:
           PGPORT: ${{ secrets.DB_PORT }}
           PGDATABASE: ${{ secrets.DB_NAME }}
           PGUSER: ${{ secrets.DB_USER }}
-          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+          PGPASSWORD: '${{ secrets.DB_PASSWORD }}'
+
         run: |
           psql -h $PGHOST -p $PGPORT -d $PGDATABASE -U $PGUSER -f $INSERT_SQL_FILE
