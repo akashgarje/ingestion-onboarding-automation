@@ -3,7 +3,7 @@ name: Deploy Insert Statements to RDS
 on:
   pull_request:
     types:
-      - closed  # Runs when the PR is merged
+      - closed  
     branches:
       - dev  
 
