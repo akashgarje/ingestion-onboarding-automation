@@ -9,6 +9,7 @@ on:
 
 jobs:
   deploy:
+    environment: dev
     runs-on: ubuntu-latest
 
     steps:
@@ -36,6 +37,15 @@ jobs:
             echo "No RDS SQL file found. Exiting."
             exit 1
           fi
+
+      - name: Debug Secret Variables
+        run: |
+          echo "DB_HOST: ${{ secrets.DB_HOST }}"
+          echo "DB_PORT: ${{ secrets.DB_PORT }}"
+          echo "DB_DATABASE: ${{ secrets.DB_NAME }}"
+          echo "DB_USER: ${{ secrets.DB_USER }}"
+          echo "DB_PASSWORD length: ${#PGPASSWORD}"
+
 
       - name: Connect to RDS and Run Insert Statements
         env:
