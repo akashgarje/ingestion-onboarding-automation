@@ -1,4 +1,4 @@
-CREATE TABLE stage.fin_user_test_1_demo_2 (
+CREATE TABLE land.fin_user_test_1_demo_1 (
 Model VARCHAR(255),
 Select Version VARCHAR(255),
 Report_Count NUMBER(38,0),

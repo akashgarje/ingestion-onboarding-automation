@@ -18,7 +18,10 @@ jobs:
           fetch-depth: 0
 
       - name: Find the latest feature branch merged
-        run: echo "FEATURE_BRANCH=$(git branch -r --sort=-committerdate | grep 'feature/' | head -n 1 | awk '{print $1}')" >> $GITHUB_ENV
+        run: echo "FEATURE_BRANCH=$(git branch -r --sort=-committerdate | grep 'feature/' | head -n 1 | sed 's|origin/||')" >> $GITHUB_ENV
+
+      - name: Checkout Feature Branch
+        run: git checkout $FEATURE_BRANCH
 
       - name: List SQL Files
         run: |
