@@ -135,9 +135,9 @@ def create_downloadable_zip(sheets_data, src_nm, dataset_nm, land_sql_script, st
 
 def git_push_files_to_feature_branch(files, branch_name, folder):
     try:
-        GIT_USERNAME = 'akashgarje'
-        GIT_TOKEN = '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'
-        GIT_REPO = 'https://akashgarje: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@github.com/akashgarje/ingestion-onboarding-automation.git'
+        GIT_USERNAME = os.getenv('GIT_USERNAME')
+        GIT_TOKEN = os.getenv('GIT_TOKEN')
+        GIT_REPO = f'https://{GIT_USERNAME}:{GIT_TOKEN}@github.com/akashgarje/ingestion-onboarding-automation.git'
         REPO_NAME = 'ingestion-onboarding-automation'
         REPO_OWNER = 'akashgarje'
 
