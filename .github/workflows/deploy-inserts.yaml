@@ -1,0 +1,45 @@
+name: Deploy Insert Statements to RDS
+
+on:
+  pull_request:
+    types:
+      - closed  # Runs when the PR is merged
+    branches:
+      - dev  # Only when merged into dev branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Find the latest feature branch merged
+        run: echo "FEATURE_BRANCH=$(git branch -r --sort=-committerdate | grep 'feature/' | head -n 1 | awk '{print $1}')" >> $GITHUB_ENV
+
+      - name: List SQL Files
+        run: |
+          echo "SQL Files in Branch:"
+          ls -l feature/*/*.sql || echo "No SQL files found."
+
+      - name: Identify SQL File with Insert Statements
+        run: |
+          INSERT_SQL_FILE=$(find feature/* -type f -name "*_rds.sql" | head -n 1)
+          echo "INSERT_SQL_FILE=$INSERT_SQL_FILE" >> $GITHUB_ENV
+          if [ -z "$INSERT_SQL_FILE" ]; then
+            echo "No RDS SQL file found. Exiting."
+            exit 1
+          fi
+
+      - name: Connect to RDS and Run Insert Statements
+        env:
+          PGHOST: ${{ secrets.DB_HOST }}
+          PGPORT: ${{ secrets.DB_PORT }}
+          PGDATABASE: ${{ secrets.DB_NAME }}
+          PGUSER: ${{ secrets.DB_USER }}
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          psql -h $PGHOST -p $PGPORT -d $PGDATABASE -U $PGUSER -f $INSERT_SQL_FILE

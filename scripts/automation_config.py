@@ -7,6 +7,7 @@ import zipfile
 import traceback
 import os, subprocess
 from datetime import datetime
+import requests
 
 # Inject custom CSS for button placement
 st.markdown("""
@@ -131,15 +132,21 @@ def create_downloadable_zip(sheets_data, src_nm, dataset_nm, land_sql_script, st
 
     return output
 
+
 def git_push_files_to_feature_branch(files, branch_name, folder):
     try:
         GIT_USERNAME = 'akashgarje'
         GIT_TOKEN = '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'
-        GIT_REPO = 'https://akashgarje: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@github.com/akashgarje/ingestor-onboarding-automation.git'
+        GIT_REPO = 'https://akashgarje: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@github.com/akashgarje/ingestion-onboarding-automation.git'
+        REPO_NAME = 'ingestion-onboarding-automation'
+        REPO_OWNER = 'akashgarje'
 
         # Get the script's directory (local Git repo)
         repo_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(repo_path)
+
+        remotes = subprocess.check_output(["git", "remote", "-v"], text=True, cwd=repo_path)
+        # st.write(remotes)
 
         # Ensure the repository is initialized
         if not os.path.exists(os.path.join(repo_path, ".git")):
@@ -167,6 +174,7 @@ def git_push_files_to_feature_branch(files, branch_name, folder):
             destination = os.path.join(folder_path, os.path.basename(file))
             os.rename(file, destination)  # Move file to folder
             file_paths.append(destination)
+        st.write(f"Files in folder {folder_path}: {os.listdir(folder_path)}")
 
         # Add files to Git
         subprocess.run(["git", "add", folder], check=True, cwd=repo_path)
@@ -174,10 +182,26 @@ def git_push_files_to_feature_branch(files, branch_name, folder):
         # Commit the changes
         subprocess.run(["git", "commit", "-m", f"Added new files to {folder} in feature branch"], check=True, cwd=repo_path)
 
+        current_branch = subprocess.check_output(["git", "branch", "--show-current"], text=True, cwd=repo_path)
+        # st.write(f"Current branch: {current_branch}")
+
         # Push the changes to the remote repository
         subprocess.run(["git", "push", "--set-upstream", "origin", branch_name], check=True, cwd=repo_path)
 
-        return "Git push successful!"
+        # Create a pull request
+        pr_url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls"
+        pr_data = {
+            "title": f"Merge {branch_name} to dev",
+            "head": branch_name,
+            "base": "dev",
+            "body": "This PR merges the feature branch to the dev branch."
+        }
+        response = requests.post(pr_url, json=pr_data, auth=(GIT_USERNAME, GIT_TOKEN))
+
+        if response.status_code == 201:
+            return "Git push successful and PR created!"
+        else:
+            return f"Git push successful but PR creation failed: {response.json()}"
 
     except subprocess.CalledProcessError as e:
         return f"Git push failed: {e}"
@@ -629,7 +653,7 @@ if st.session_state.sql_generated :
             os.path.join(temp_dir, f"{src_nm}_{dataset_nm}_rds.sql"),
 ]
         result = git_push_files_to_feature_branch(sql_files_list,branch_name,folder_name)
-        st.success("Git Code Push Successfull")
+        st.success("Git Code Push Successfull and PR raised")
 
     if download_button_clicked:
         zip_data = create_downloadable_zip(
