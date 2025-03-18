@@ -27,11 +27,11 @@ jobs:
       - name: List SQL Files
         run: |
           echo "SQL Files in Branch:"
-          find . -type f -path "./$FEATURE_BRANCH/$FEATURE_BRANCH/*.sql" -print || echo "No SQL files found."
+          ls -l *.sql || echo "No SQL files found."
 
       - name: Identify SQL File with Insert Statements
         run: |
-          INSERT_SQL_FILE=$(find . -type f -path "./$FEATURE_BRANCH/$FEATURE_BRANCH/*_rds.sql" | head -n 1)
+          INSERT_SQL_FILE=$(find . -type f -name "*_rds.sql" | head -n 1)
           echo "INSERT_SQL_FILE=$INSERT_SQL_FILE" >> $GITHUB_ENV
           if [ -z "$INSERT_SQL_FILE" ]; then
             echo "No RDS SQL file found. Exiting."
