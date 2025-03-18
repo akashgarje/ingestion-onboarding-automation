@@ -425,7 +425,7 @@ def generate_sys_config_table_info():
     "wrkflw_nm": "",
     "copy_by_field_nm_not_posn_ind": "",
     "bypas_file_hdr_config_posn_check_ind": "",
-    "bypas_file_hdr_config_check_inf": ""
+    "bypas_file_hdr_config_check_ind": ""
     }
     )
     return pd.DataFrame(extracted_data)
