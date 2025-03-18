@@ -19,7 +19,14 @@ jobs:
           fetch-depth: 1
 
       - name: Find the latest feature branch merged
-        run: echo "FEATURE_BRANCH=$(git branch -r --sort=-committerdate | grep 'feature/' | head -n 1 | sed 's|origin/||')" >> $GITHUB_ENV
+        run: |
+          FEATURE_BRANCH=$(git branch -r --sort=-committerdate | grep 'feature/' | head -n 1 | sed 's|origin/feature/||')
+          if [ -z "$FEATURE_BRANCH" ]; then
+            echo "No feature branch found. Exiting."
+            exit 1
+          fi
+          echo "FEATURE_BRANCH=$FEATURE_BRANCH" >> $GITHUB_ENV
+          echo "Detected FEATURE_BRANCH: $FEATURE_BRANCH"
 
       - name: Checkout Feature Branch
         run: git checkout $FEATURE_BRANCH
@@ -27,16 +34,17 @@ jobs:
       - name: List SQL Files
         run: |
           echo "SQL Files in Branch:"
-          ls -l *.sql || echo "No SQL files found."
+          ls -l feature/$FEATURE_BRANCH/$FEATURE_BRANCH/*.sql || echo "No SQL files found."
 
       - name: Identify SQL File with Insert Statements
         run: |
-          INSERT_SQL_FILE=$(find . -type f -name "*_rds.sql" | head -n 1)
-          echo "INSERT_SQL_FILE=$INSERT_SQL_FILE" >> $GITHUB_ENV
+          INSERT_SQL_FILE=$(find feature/$FEATURE_BRANCH/$FEATURE_BRANCH -type f -name "*_rds.sql" | head -n 1)
           if [ -z "$INSERT_SQL_FILE" ]; then
             echo "No RDS SQL file found. Exiting."
             exit 1
           fi
+          echo "INSERT_SQL_FILE=$INSERT_SQL_FILE" >> $GITHUB_ENV
+          echo "Found INSERT_SQL_FILE: $INSERT_SQL_FILE"
 
       - name: Debug Secret Variables
         run: |
