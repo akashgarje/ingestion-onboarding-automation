@@ -18,13 +18,13 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Find the Latest Merged Folder
+      - name: Find the Latest Merged Folder and Identify SQL File
         run: |
           echo "Fetching recent commits..."
           git fetch --prune
 
-          # Find the latest merged folder in the 'dev' branch
-          RECENT_FOLDER=$(git diff --name-only $(git rev-list --parents -n 1 HEAD | cut -d' ' -f2) HEAD)
+          # Find the latest changed top-level folder (from the last commit)
+          RECENT_FOLDER=$(git diff --name-only HEAD~1 HEAD | awk -F'/' '{print $1}' | sort | uniq | tail -n 1)
 
           if [ -z "$RECENT_FOLDER" ]; then
             echo "No recently merged folder found. Exiting."
