@@ -18,31 +18,36 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Find the latest feature branch merged
+      - name: Find the Latest Merged Folder
         run: |
-          FEATURE_BRANCH=$(git branch -r --sort=-committerdate | grep 'feature/' | head -n 1 | sed 's|origin/feature/||')
-          if [ -z "$FEATURE_BRANCH" ]; then
-            echo "No feature branch found. Exiting."
+          echo "Fetching recent commits..."
+          git fetch --prune
+
+          # Find the latest merged folder in the 'dev' branch
+          RECENT_FOLDER=$(git diff --name-only HEAD~1 HEAD | grep '/' | cut -d'/' -f1 | sort | uniq | tail -n 1)
+
+          if [ -z "$RECENT_FOLDER" ]; then
+            echo "No recently merged folder found. Exiting."
             exit 1
           fi
-          echo "FEATURE_BRANCH=$FEATURE_BRANCH" >> $GITHUB_ENV
-          echo "Detected FEATURE_BRANCH: $FEATURE_BRANCH"
 
-      - name: Checkout Feature Branch
-        run: git checkout $FEATURE_BRANCH
+          echo "Found RECENT_FOLDER: $RECENT_FOLDER"
+          echo "RECENT_FOLDER=$RECENT_FOLDER" >> $GITHUB_ENV
 
-      - name: List SQL Files
+      - name: List SQL Files in Folder
         run: |
-          echo "SQL Files in Branch:"
-          ls -l feature/$FEATURE_BRANCH/$FEATURE_BRANCH/*.sql || echo "No SQL files found."
+          echo "SQL Files in Merged Folder ($RECENT_FOLDER):"
+          ls -l $RECENT_FOLDER || echo "No SQL files found."
 
       - name: Identify SQL File with Insert Statements
         run: |
-          INSERT_SQL_FILE=$(find feature/$FEATURE_BRANCH/$FEATURE_BRANCH -type f -name "*_rds.sql" | head -n 1)
+          INSERT_SQL_FILE=$(find $RECENT_FOLDER -type f -name "*_rds.sql" | head -n 1)
+          
           if [ -z "$INSERT_SQL_FILE" ]; then
             echo "No RDS SQL file found. Exiting."
             exit 1
           fi
+
           echo "INSERT_SQL_FILE=$INSERT_SQL_FILE" >> $GITHUB_ENV
           echo "Found INSERT_SQL_FILE: $INSERT_SQL_FILE"
 
@@ -54,7 +59,6 @@ jobs:
           echo "DB_USER: ${{ secrets.DB_USER }}"
           echo "DB_PASSWORD length: ${#PGPASSWORD}"
 
-
       - name: Connect to RDS and Run Insert Statements
         env:
           PGHOST: ${{ secrets.DB_HOST }}
@@ -62,6 +66,5 @@ jobs:
           PGDATABASE: ${{ secrets.DB_NAME }}
           PGUSER: ${{ secrets.DB_USER }}
           PGPASSWORD: '${{ secrets.DB_PASSWORD }}'
-
         run: |
           psql -h $PGHOST -p $PGPORT -d $PGDATABASE -U $PGUSER -f $INSERT_SQL_FILE
