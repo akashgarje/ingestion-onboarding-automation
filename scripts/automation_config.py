@@ -372,10 +372,10 @@ def generate_sys_config_dataset_info():
     "notfcn_email_nm": "",
     "virt_env_cd": "preproc",
     "proc_stage_cd": "Y",
-    "catlg_flg": dialect,
-    "trgt_dw_list": warehouse_nm,
-    "cmput_whse_nm": "",
-    "manl_upld_s3_uri_txt": "N",
+    "catlg_flg": "Y",
+    "trgt_dw_list": dialect,
+    "cmput_whse_nm": warehouse_nm,
+    "manl_upld_s3_uri_txt": "",
     "manl_upld_flg":"N"
     }
     )
@@ -423,7 +423,7 @@ def generate_sys_config_table_info():
     "bypas_file_order_seq_check_ind": "N",
     "land_spctrm_flg": "",
     "wrkflw_nm": "",
-    "copy_by_field_nm_not_posn_index": "",
+    "copy_by_field_nm_not_posn_ind": "",
     "bypas_file_hdr_config_posn_check_ind": "",
     "bypas_file_hdr_config_check_inf": ""
     }
