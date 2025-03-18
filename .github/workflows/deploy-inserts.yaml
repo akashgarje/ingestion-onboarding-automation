@@ -24,7 +24,7 @@ jobs:
           git fetch --prune
 
           # Find the latest merged folder in the 'dev' branch
-          RECENT_FOLDER=$(git diff --name-only HEAD~1 HEAD | grep '/' | cut -d'/' -f1 | sort | uniq | tail -n 1)
+          RECENT_FOLDER=$(git diff --name-only $(git rev-list --parents -n 1 HEAD | cut -d' ' -f2) HEAD)
 
           if [ -z "$RECENT_FOLDER" ]; then
             echo "No recently merged folder found. Exiting."
