@@ -20,13 +20,22 @@ jobs:
 
       - name: Find the latest feature branch merged
         run: |
-          FEATURE_BRANCH=$(git branch -r --sort=-committerdate | grep 'feature/' | head -n 1 | sed 's|origin/feature/||')
+          echo "Fetching all branches..."
+          git fetch --prune
+
+          echo "Listing branches..."
+          git branch -r --sort=-committerdate
+
+          # Find the most recent feature branch merged into dev
+          FEATURE_BRANCH=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin/ | grep 'feature/' | head -n 1 | sed 's|origin/||')
+
+          echo "Found FEATURE_BRANCH: $FEATURE_BRANCH"
+          echo "FEATURE_BRANCH=$FEATURE_BRANCH" >> $GITHUB_ENV
+
           if [ -z "$FEATURE_BRANCH" ]; then
             echo "No feature branch found. Exiting."
             exit 1
           fi
-          echo "FEATURE_BRANCH=$FEATURE_BRANCH" >> $GITHUB_ENV
-          echo "Detected FEATURE_BRANCH: $FEATURE_BRANCH"
 
       - name: Checkout Feature Branch
         run: git checkout $FEATURE_BRANCH
