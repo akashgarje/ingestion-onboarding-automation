@@ -137,7 +137,8 @@ def git_push_files_to_feature_branch(files, branch_name, folder):
     try:
         GIT_USERNAME = os.getenv('GIT_USERNAME')
         GIT_TOKEN = os.getenv('GIT_TOKEN')
-        GIT_REPO = f'https://{GIT_USERNAME}:{GIT_TOKEN}@github.com/akashgarje/ingestion-onboarding-automation.git'
+        # GIT_REPO = f'https://{GIT_USERNAME}:{GIT_TOKEN}@github.com/akashgarje/ingestion-onboarding-automation.git'
+        GIT_REPO = f'git@github.com:akashgarje/ingestion-onboarding-automation.git'
         REPO_NAME = 'ingestion-onboarding-automation'
         REPO_OWNER = 'akashgarje'
         st.write(GIT_REPO)
@@ -195,7 +196,7 @@ def git_push_files_to_feature_branch(files, branch_name, folder):
             "title": f"Merge {branch_name} to dev",
             "head": branch_name,
             "base": "dev",
-            "body": "This PR merges the feature branch to the dev branch."
+            "body": "This PR merges the feature branch to the dev branch. Inserts the configurations in the database."
         }
         response = requests.post(pr_url, json=pr_data, auth=(GIT_USERNAME, GIT_TOKEN))
 
